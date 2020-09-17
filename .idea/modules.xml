@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/JahbulonEventBot.iml" filepath="$PROJECT_DIR$/JahbulonEventBot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MasterBotService/MasterBotService.iml" filepath="$PROJECT_DIR$/MasterBotService/MasterBotService.iml" />
+      <module fileurl="file://$PROJECT_DIR$/OrganizersBotService/OrganizersBotService.iml" filepath="$PROJECT_DIR$/OrganizersBotService/OrganizersBotService.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ParticipantsBotService/ParticipantsBotService.iml" filepath="$PROJECT_DIR$/ParticipantsBotService/ParticipantsBotService.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ServerService/ServerService.iml" filepath="$PROJECT_DIR$/ServerService/ServerService.iml" />
+    </modules>
+  </component>
+</project>
