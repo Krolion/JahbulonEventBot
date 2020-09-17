@@ -1,7 +1,6 @@
 package dbpackage.entity;
 
 import lombok.*;
-
 import java.util.Set;
 import javax.persistence.*;
 
@@ -20,14 +19,11 @@ public class Event {
     private int id;
 
     private int participationChatId;
-
     private int orgChatId;
 
-  /*  @OneToMany(mappedBy = "answeredQuestion")
+    @OneToMany(mappedBy = "answeredQuestion")
     private Set<AnsweredQuestion> answeredQuestion;
     @OneToMany(mappedBy = "unansweredQuestion")
     private Set<UnansweredQuestion> unansweredQuestion;
-*/
-
 
 }
