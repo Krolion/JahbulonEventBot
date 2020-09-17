@@ -3,10 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/JahbulonEventBot.iml" filepath="$PROJECT_DIR$/JahbulonEventBot.iml" />
-      <module fileurl="file://$PROJECT_DIR$/MasterBotService/MasterBotService.iml" filepath="$PROJECT_DIR$/MasterBotService/MasterBotService.iml" />
-      <module fileurl="file://$PROJECT_DIR$/OrganizersBotService/OrganizersBotService.iml" filepath="$PROJECT_DIR$/OrganizersBotService/OrganizersBotService.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ParticipantsBotService/ParticipantsBotService.iml" filepath="$PROJECT_DIR$/ParticipantsBotService/ParticipantsBotService.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ServerService/ServerService.iml" filepath="$PROJECT_DIR$/ServerService/ServerService.iml" />
+      <module fileurl="file://$PROJECT_DIR$/master_bot_service/master_bot_service.iml" filepath="$PROJECT_DIR$/master_bot_service/master_bot_service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/organizers_bot_service/organizers_bot_service.iml" filepath="$PROJECT_DIR$/organizers_bot_service/organizers_bot_service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/participants_bot_service/participants_bot_service.iml" filepath="$PROJECT_DIR$/participants_bot_service/participants_bot_service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/server_service/server_service.iml" filepath="$PROJECT_DIR$/server_service/server_service.iml" />
     </modules>
   </component>
 </project>

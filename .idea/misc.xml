@@ -4,10 +4,10 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
-        <option value="$PROJECT_DIR$/MasterBotService/pom.xml" />
-        <option value="$PROJECT_DIR$/ParticipantsBotService/pom.xml" />
-        <option value="$PROJECT_DIR$/OrganizersBotService/pom.xml" />
-        <option value="$PROJECT_DIR$/ServerService/pom.xml" />
+        <option value="$PROJECT_DIR$/master_bot_service/pom.xml" />
+        <option value="$PROJECT_DIR$/organizers_bot_service/pom.xml" />
+        <option value="$PROJECT_DIR$/participants_bot_service/pom.xml" />
+        <option value="$PROJECT_DIR$/server_service/pom.xml" />
       </list>
     </option>
   </component>

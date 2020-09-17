@@ -6,18 +6,22 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="organizers_bot_service" />
+        <module name="participants_bot_service" />
+        <module name="master_bot_service" />
         <module name="JahbulonEventBot" />
-        <module name="ServerService" />
-        <module name="ParticipantsBotService" />
-        <module name="OrganizersBotService" />
-        <module name="MasterBotService" />
+        <module name="server_service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="JahbulonEventBot" target="1.5" />
+      <module name="master_bot_service" target="11" />
       <module name="MasterBotService" target="1.8" />
+      <module name="organizers_bot_service" target="11" />
       <module name="OrganizersBotService" target="1.8" />
+      <module name="participants_bot_service" target="11" />
       <module name="ParticipantsBotService" target="1.8" />
+      <module name="server_service" target="11" />
       <module name="ServerService" target="1.8" />
     </bytecodeTargetLevel>
   </component>
@@ -27,6 +31,10 @@
       <module name="OrganizersBotService" options="-parameters" />
       <module name="ParticipantsBotService" options="-parameters" />
       <module name="ServerService" options="-parameters" />
+      <module name="master_bot_service" options="-parameters" />
+      <module name="organizers_bot_service" options="-parameters" />
+      <module name="participants_bot_service" options="-parameters" />
+      <module name="server_service" options="-parameters" />
     </option>
   </component>
 </project>
