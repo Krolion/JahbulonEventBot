@@ -18,6 +18,6 @@ public class ParticipantsChat {
     private int id;
 
     @Column(unique = true)
-    private int participationChatId;
+    private long participationChatId;
 
 }

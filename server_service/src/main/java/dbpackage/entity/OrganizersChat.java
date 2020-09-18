@@ -21,7 +21,7 @@ public class OrganizersChat {
 
     @NotNull
     @Column(unique = true)
-    private int orgChatId;
+    private long orgChatId;
 
     @OneToMany(targetEntity = Event.class)
     private Set<Event> events;

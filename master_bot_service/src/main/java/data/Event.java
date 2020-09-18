@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Question {
-    public long message_id;
-    public long chat_id;
-    public String text;
+public class Event {
+    public long eventId;
+    public long participantsChatId;
+    public long orgsChatId;
 }

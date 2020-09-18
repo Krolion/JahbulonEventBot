@@ -5,6 +5,8 @@
     <file url="file://$PROJECT_DIR$/organizers_bot_service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/organizers_bot_service/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/participants_bot_service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/participants_bot_service/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/server_service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/server_service/src/main/resources" charset="UTF-8" />
   </component>
 </project>
