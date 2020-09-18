@@ -1,9 +1,8 @@
 package dbpackage.entity;
 
+import com.sun.istack.NotNull;
 import lombok.*;
 import javax.persistence.*;
-
-
 
 @Entity
 @Getter
@@ -14,17 +13,14 @@ import javax.persistence.*;
 public class AnsweredQuestion{
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    /*
-    @Required
-    */
-
-    @NonNull
+    @NotNull
     @ManyToOne
     private Event answeredQuestion;
 
+    @NotNull
     private String questionText;
     private String answerText;
 

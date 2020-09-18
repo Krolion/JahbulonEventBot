@@ -1,5 +1,6 @@
 package dbpackage.entity;
 
+import com.sun.istack.NotNull;
 import lombok.*;
 import java.util.Set;
 import javax.persistence.*;
@@ -15,15 +16,20 @@ import javax.persistence.*;
 public class Event {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private int participationChatId;
-    private int orgChatId;
+    @NotNull
+    @ManyToOne
+    private OrganizersChat organizersChat;
+    
+    @NotNull
+    @ManyToOne
+    private ParticipantsChat participantsChat;
 
-    @OneToMany(mappedBy = "answeredQuestion")
+    @OneToMany(targetEntity = AnsweredQuestion.class)
     private Set<AnsweredQuestion> answeredQuestion;
-    @OneToMany(mappedBy = "unansweredQuestion")
+    @OneToMany(targetEntity = UnansweredQuestion.class)
     private Set<UnansweredQuestion> unansweredQuestion;
 
 }

@@ -1,10 +1,8 @@
 package dbpackage.entity;
 
 import lombok.*;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 
+import javax.persistence.*;
 
 
 @Entity
@@ -16,7 +14,10 @@ import javax.persistence.Id;
 public class ParticipantsChat {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @Column(unique = true)
+    private int participationChatId;
 
 }

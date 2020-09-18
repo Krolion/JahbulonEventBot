@@ -1,5 +1,6 @@
 package dbpackage.entity;
 
+import com.sun.istack.NotNull;
 import lombok.*;
 import javax.persistence.*;
 
@@ -14,15 +15,14 @@ import javax.persistence.*;
 public class UnansweredQuestion {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    /*
-    @Required
-    @NotNull*/
+    @NotNull
     @ManyToOne
     private Event unansweredQuestion;
 
+    @NotNull
     private String questionText;
 
 }

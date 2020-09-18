@@ -1,10 +1,10 @@
 package dbpackage.entity;
 
+import com.sun.istack.NotNull;
 import lombok.*;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 
+import javax.persistence.*;
+import java.util.Set;
 
 
 @Entity
@@ -16,7 +16,13 @@ import javax.persistence.Id;
 public class OrganizersChat {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @NotNull
+    @Column(unique = true)
+    private int orgChatId;
+
+    @OneToMany(targetEntity = Event.class)
+    private Set<Event> events;
 }
