@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Evgeny Borisov
  */
 @RestController
-@RequestMapping("/api/bot/")
+@RequestMapping("/api/")
 public class MasterBotController {
 
     @Autowired
@@ -20,10 +20,20 @@ public class MasterBotController {
 
     @GetMapping("hello")
     public String hello(){
-        return "Hi, i'm a BotController";
+        return "Hi, i'm a QAMasterBotController";
     }
 
+    @GetMapping("last_update")
+    public String last_update_o() throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(qaMasterBot.lastUpdate);
+    }
 
+    @GetMapping("last_message")
+    public String last_message() throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(qaMasterBot.lastMessage);
+    }
 }
 
 

@@ -1,8 +1,12 @@
 package billy.model.telegram;
 
+import billy.data.Chat;
 import billy.model.telegram.parsers.UserMessageParser;
 import lombok.SneakyThrows;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -14,7 +18,7 @@ import javax.inject.Singleton;
 @Singleton
 public class QASlaveOBot extends TelegramLongPollingBot {
 
-    private final String server = "localhost:8087/api/central/"; //TODO Удалить это и написать нормально
+    private final String server = "http://localhost:8084/api/"; //TODO Удалить это и написать нормально
     public int a = 0;
     public SendMessage lastMessage;
     public Update lastUpdate;
@@ -35,6 +39,14 @@ public class QASlaveOBot extends TelegramLongPollingBot {
             // Логика если бота добавили в группу или создали группу с ним
             SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
             sendMessage.setText("Я не добавился, сорян.");
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.set("Content-Type", "application/json");
+            HttpEntity<Chat> request = new HttpEntity<Chat>(Chat.builder()
+                    .chat_id(update.getMessage().getChatId())
+                    .build(), httpHeaders);
+            String s = restTemplate.postForObject(server + "new_orgs_chat", request, String.class);
+            sendMessage.setText(s);
             lastMessage = sendMessage;
             try {
                 execute(sendMessage);

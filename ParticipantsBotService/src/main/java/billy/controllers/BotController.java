@@ -20,12 +20,11 @@ public class BotController {
 
     @GetMapping("hello")
     public String hello(){
-        return "Hi, i'm a BotController";
+        return "Hi, i'm a QASlavePBotController";
     }
 
     @GetMapping("send")
     public String send_message() {
-        qaSlavePBot.sendMessage();
         return "i'm working on it";
     }
 

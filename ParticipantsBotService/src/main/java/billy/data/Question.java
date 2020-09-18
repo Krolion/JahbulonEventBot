@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Question {
-    public int message_id;
-    public int chat_id;
+    public long message_id;
+    public long chat_id;
     public String text;
 }

@@ -20,7 +20,7 @@ public class BotController {
 
     @GetMapping("hello")
     public String hello(){
-        return "Hi, i'm a BotController";
+        return "Hi, i'm a QASlaveOBotController";
     }
 
     @GetMapping("send")
@@ -40,6 +40,8 @@ public class BotController {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(qaSlaveOBot.lastMessage);
     }
+
+
 }
 
 
