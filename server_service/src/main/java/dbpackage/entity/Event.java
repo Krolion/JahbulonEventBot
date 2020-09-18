@@ -2,9 +2,12 @@ package dbpackage.entity;
 
 import com.sun.istack.NotNull;
 import lombok.*;
+
+import java.util.List;
 import java.util.Set;
 import javax.persistence.*;
 
+import static javax.persistence.CascadeType.ALL;
 
 
 @Entity
@@ -20,16 +23,19 @@ public class Event {
     private int id;
 
     @NotNull
-    @ManyToOne
-    private OrganizersChat organizersChat;
-    
-    @NotNull
-    @ManyToOne
-    private ParticipantsChat participantsChat;
-
-    @OneToMany(targetEntity = AnsweredQuestion.class)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<AnsweredQuestion> answeredQuestion;
-    @OneToMany(targetEntity = UnansweredQuestion.class)
+
+    @NotNull
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UnansweredQuestion> unansweredQuestion;
+
+    @NotNull
+    @OneToOne(cascade = ALL, fetch = FetchType.EAGER)
+    private OrganizersChat organizersChat;
+
+    @NotNull
+    @OneToOne(cascade = ALL, fetch = FetchType.EAGER)
+    private ParticipantsChat participantsChat;
 
 }

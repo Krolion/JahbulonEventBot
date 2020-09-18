@@ -4,6 +4,7 @@ import com.sun.istack.NotNull;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 
@@ -19,10 +20,8 @@ public class OrganizersChat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NotNull
+/*    @NotNull
     @Column(unique = true)
-    private int orgChatId;
+    private int orgChatId; */
 
-    @OneToMany(targetEntity = Event.class)
-    private Set<Event> events;
 }

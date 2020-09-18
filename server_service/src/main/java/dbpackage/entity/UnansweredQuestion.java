@@ -18,9 +18,6 @@ public class UnansweredQuestion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NotNull
-    @ManyToOne
-    private Event unansweredQuestion;
 
     @NotNull
     private String questionText;

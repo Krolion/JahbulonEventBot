@@ -16,9 +16,6 @@ public class AnsweredQuestion{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NotNull
-    @ManyToOne
-    private Event answeredQuestion;
 
     @NotNull
     private String questionText;
