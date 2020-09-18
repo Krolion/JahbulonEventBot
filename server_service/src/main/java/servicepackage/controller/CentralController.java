@@ -4,6 +4,7 @@ import dbpackage.entity.Event;
 import dbpackage.entity.OrganizersChat;
 import dbpackage.entity.ParticipantsChat;
 import dbpackage.entity.UnansweredQuestion;
+import dbpackage.repo.ParticipantsChatRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
