@@ -1,5 +1,6 @@
 package com.master_bot_service.telegram;
 
+import com.master_bot_service.data.Chats;
 import com.master_bot_service.telegram.parser.UserMessageParser;
 import com.master_bot_service.data.Event;
 import lombok.SneakyThrows;
@@ -36,15 +37,15 @@ public class MasterBot extends TelegramLongPollingBot {
         try {
             flag = chatListCommandParser.parseMessage(update.getMessage().getText()).isCommand;
         } catch (Exception ignored) {}
-        if (flag) {/* TODO: need to resolve following...
+        if (flag) {
             // Логика если есть команда /question в начале
             Chats pChats = restTemplate.getForObject(server + "ochats", Chats.class);
-            Chats oChats = restTemplate.getForObject(server + "pchats", Chats.class);*/
-            SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());/*
+            Chats oChats = restTemplate.getForObject(server + "pchats", Chats.class);
+            SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
             assert oChats != null;
-            assert pChats != null;*/
-            sendMessage.setText("Participants chats \n" /*+ pChats.chats.toString()*/
-                    + "\nOrgs chat\n" /*+ oChats.chats.toString()*/);
+            assert pChats != null;
+            sendMessage.setText("Participants chats \n" + pChats.chats.toString()
+                    + "\nOrgs chat\n" + oChats.chats.toString());
             lastMessage = sendMessage;
             execute(sendMessage);
             return;
@@ -90,6 +91,7 @@ public class MasterBot extends TelegramLongPollingBot {
             }
         }
     }
+
 
     @Override
     public String getBotUsername() {

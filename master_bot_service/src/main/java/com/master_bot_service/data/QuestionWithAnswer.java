@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Question {
-    public long message_id;
-    public long participants_chat_id;
-    public long orgs_chat_id;
-    public String text;
+public class QuestionWithAnswer {
+    public Question question;
+    public String answer;
 }

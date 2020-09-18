@@ -1,8 +1,9 @@
-package com.participants_bot_service.telegram;
+package com.organizers_bot_service.telegram;
 
-import com.participants_bot_service.data.Chat;
-import com.participants_bot_service.data.Question;
-import com.participants_bot_service.telegram.parser.UserMessageParser;
+import com.organizers_bot_service.data.Chat;
+import com.organizers_bot_service.data.Question;
+import com.organizers_bot_service.data.QuestionWithAnswer;
+import com.organizers_bot_service.telegram.parser.UserMessageParser;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -11,33 +12,38 @@ import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 @Component
 @Singleton
-public class ParticipantsBot extends TelegramLongPollingBot {
+public class QASlaveOBot extends TelegramLongPollingBot {
 
     private final String server = "http://localhost:8084/api/"; //TODO Удалить это и написать нормально
-    public SendMessage lastMessage = null;
-    public Object lastUpdate;
-    private final UserMessageParser questionCommandParser = new UserMessageParser("question");
+    public int a = 0;
+    public SendMessage lastMessage;
+    public Update lastUpdate;
+    public ArrayList<Question> activeQuestions = new ArrayList<Question>();
+    public HashMap<String, Question> myQuestions = new HashMap<String, Question>();
+    private final UserMessageParser answerCommandParser = new UserMessageParser("answer");
+
 
     @Override
     @SneakyThrows
     public void onUpdateReceived(Update update) {
         lastUpdate = update;
+        boolean flag = false;
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set("Content-Type", "application/json");
-        boolean flag = false;
         try {
             if (update.getMessage().getNewChatMembers().stream().anyMatch(n -> n.getId() == this.getBotId())) {
                 flag = true;
             }
             if (!flag) { flag = update.getMessage().getGroupchatCreated(); }
-        } catch (Exception ignored) {} //TODO Написать это через Optional
+        } catch (Exception ignored) {}
         if (flag) {
             // Логика если бота добавили в группу или создали группу с ним
             SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
@@ -45,7 +51,7 @@ public class ParticipantsBot extends TelegramLongPollingBot {
             HttpEntity<Chat> request = new HttpEntity<Chat>(Chat.builder()
                     .chat_id(update.getMessage().getChatId())
                     .build(), httpHeaders);
-            String s = restTemplate.postForObject(server + "new_participants_chat", request, String.class);
+            String s = restTemplate.postForObject(server + "new_orgs_chat", request, String.class);
             sendMessage.setText(s);
             lastMessage = sendMessage;
             try {
@@ -56,42 +62,42 @@ public class ParticipantsBot extends TelegramLongPollingBot {
             return;
         }
         try {
-            flag = questionCommandParser.parseMessage(update.getMessage().getText()).isCommand;
-        } catch (Exception ignored) {} //TODO Написать это через Optional
+            flag = answerCommandParser.parseMessage(update.getMessage().getText()).isCommand;
+        } catch (Exception ignored) {}
         if (flag) {
-            // Логика если есть команда /question в начале
+            // Логика если есть команда /answer в начале
             SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
-            sendMessage.setText("Вопрос не был загружен");
-            HttpEntity<Question> request = new HttpEntity<Question>(
-                    Question.builder().chat_id(update.getMessage().getChatId())
-                            .message_id(update.getMessage().getMessageId())
-                            .text(questionCommandParser.text).build(), httpHeaders);
-            String s = restTemplate.postForObject(server + "new_question", request, String.class);
-            sendMessage.setText(s);
+            if (update.getMessage().isReply()) {
+                if (myQuestions.containsKey(update.getMessage().getReplyToMessage().getText())) {
+                    QuestionWithAnswer questionWithAnswer = QuestionWithAnswer.builder()
+                            .question(myQuestions.get(update.getMessage().getReplyToMessage().getText()))
+                            .answer(answerCommandParser.text).build();
+                    HttpEntity<QuestionWithAnswer> request = new HttpEntity<QuestionWithAnswer>(questionWithAnswer, httpHeaders);
+                    String s = restTemplate.postForObject("http://localhost:8085/api/put_question", request, String.class);
+                    sendMessage.setText("Спасибо за ответ, " + update.getMessage().getFrom().getUserName() + ".");
+                }
+            }
             lastMessage = sendMessage;
             execute(sendMessage);
         }
     }
 
+    @SneakyThrows
     public void sendMessage(SendMessage sendMessage) {
-        try {
-            execute(sendMessage);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+        execute(sendMessage);
     }
 
     @Override
     public String getBotUsername() {
-        return "test25674Bot";
-    } //TODO Спрятать это в xml-файл
+        return "test25673Bot";
+    }
 
     public int getBotId() {
-        return 1386895726;
-    } //TODO Спрятать это в xml-файл
+        return 1389370639;
+    }
 
     @Override
     public String getBotToken() {
-        return "1386895726:AAHfFueXGvqAwouqs2XbN5I6mlUHKV8ZzG0";
-    } //TODO Спрятать это в xml-файл
+        return "1389370639:AAFpHBYG3eBgyrtFFQNh5wyhi-DIjBK5HFY";
+    }
 }

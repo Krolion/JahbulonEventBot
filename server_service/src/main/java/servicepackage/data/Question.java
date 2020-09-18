@@ -1,4 +1,5 @@
-package com.master_bot_service.data;
+package servicepackage.data;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import com.master_bot_service.telegram.MasterBot;
 
 @RestController
-@RequestMapping("/api/bot/")
-public class BotController {
+@RequestMapping("/api/")
+public class QAMasterBotController {
 
     @Autowired
     public MasterBot qaMasterBot;
