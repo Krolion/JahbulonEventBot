@@ -1,12 +1,12 @@
 package billy.controllers;
 
+import billy.data.QuestionWithAnswer;
 import billy.model.telegram.QASlavePBot;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 /**
  * @author Evgeny Borisov
@@ -29,7 +29,7 @@ public class BotController {
     }
 
     @GetMapping("last_update")
-    public String last_update_p() throws JsonProcessingException {
+    public String last_update() throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(qaSlavePBot.lastUpdate);
     }
@@ -38,6 +38,16 @@ public class BotController {
     public String last_message() throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(qaSlavePBot.lastMessage);
+    }
+
+    @PostMapping("put_question")
+    public @ResponseBody String putQuestion(@RequestBody QuestionWithAnswer questionWithAnswer) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setText(questionWithAnswer.answer)
+                .setChatId(questionWithAnswer.question.participants_chat_id)
+                .setReplyToMessageId((int) questionWithAnswer.question.message_id);
+        this.qaSlavePBot.sendMessage(sendMessage);
+        return "200";
     }
 }
 

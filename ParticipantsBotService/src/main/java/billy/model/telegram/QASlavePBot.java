@@ -63,7 +63,8 @@ public class QASlavePBot extends TelegramLongPollingBot {
             SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
             sendMessage.setText("Вопрос не был загружен");
             HttpEntity<Question> request = new HttpEntity<Question>(
-                    Question.builder().chat_id(update.getMessage().getChatId())
+                    Question.builder().participants_chat_id(update.getMessage().getChatId())
+                    .orgs_chat_id(0)
                     .message_id(update.getMessage().getMessageId())
                     .text(questionCommandParser.text).build(), httpHeaders);
             String s = restTemplate.postForObject(server + "new_question", request, String.class);
@@ -73,12 +74,9 @@ public class QASlavePBot extends TelegramLongPollingBot {
         }
     }
 
+    @SneakyThrows
     public void sendMessage(SendMessage sendMessage) {
-        try {
-            execute(sendMessage);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+        execute(sendMessage);
     }
 
     @Override

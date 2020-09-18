@@ -1,6 +1,8 @@
 package billy.model.telegram;
 
 import billy.data.Chat;
+import billy.data.Question;
+import billy.data.QuestionWithAnswer;
 import billy.model.telegram.parsers.UserMessageParser;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpEntity;
@@ -12,6 +14,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 @Component
@@ -22,13 +26,19 @@ public class QASlaveOBot extends TelegramLongPollingBot {
     public int a = 0;
     public SendMessage lastMessage;
     public Update lastUpdate;
+    public ArrayList<Question> activeQuestions = new ArrayList<Question>();
+    public HashMap<String, Question> myQuestions = new HashMap<String, Question>();
     private final UserMessageParser answerCommandParser = new UserMessageParser("answer");
+
 
     @Override
     @SneakyThrows
     public void onUpdateReceived(Update update) {
         lastUpdate = update;
         boolean flag = false;
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set("Content-Type", "application/json");
         try {
             if (update.getMessage().getNewChatMembers().stream().anyMatch(n -> n.getId() == this.getBotId())) {
                 flag = true;
@@ -39,9 +49,6 @@ public class QASlaveOBot extends TelegramLongPollingBot {
             // Логика если бота добавили в группу или создали группу с ним
             SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
             sendMessage.setText("Я не добавился, сорян.");
-            RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.set("Content-Type", "application/json");
             HttpEntity<Chat> request = new HttpEntity<Chat>(Chat.builder()
                     .chat_id(update.getMessage().getChatId())
                     .build(), httpHeaders);
@@ -61,18 +68,24 @@ public class QASlaveOBot extends TelegramLongPollingBot {
         if (flag) {
             // Логика если есть команда /answer в начале
             SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
-            if (update.getMessage().isReply()) sendMessage.setText("Спасибо за ответ!");
-            else sendMessage.setText("Спасибо за ответ!  К сожалению, я не знаю, к какому именно вопросу" +
-                                "он относится. Воспользуйтесь функцией \"Reply\" чтобы отвечать на вопросы.");
+            if (update.getMessage().isReply()) {
+                if (myQuestions.containsKey(update.getMessage().getReplyToMessage().getText())) {
+                    QuestionWithAnswer questionWithAnswer = QuestionWithAnswer.builder()
+                            .question(myQuestions.get(update.getMessage().getReplyToMessage().getText()))
+                            .answer(answerCommandParser.text).build();
+                    HttpEntity<QuestionWithAnswer> request = new HttpEntity<QuestionWithAnswer>(questionWithAnswer, httpHeaders);
+                    String s = restTemplate.postForObject("http://localhost:8085/api/put_question", request, String.class);
+                    sendMessage.setText("Спасибо за ответ, " + update.getMessage().getFrom().getUserName() + ".");
+                }
+            }
             lastMessage = sendMessage;
             execute(sendMessage);
         }
     }
 
     @SneakyThrows
-    public void sendMessage() {
-        lastMessage.setText("Кто-то меня потрогал!");
-        execute(lastMessage);
+    public void sendMessage(SendMessage sendMessage) {
+        execute(sendMessage);
     }
 
     @Override

@@ -5,10 +5,14 @@ import billy.data.Chat;
 import billy.data.Chats;
 import billy.data.Event;
 import billy.data.Question;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/")
@@ -74,7 +78,20 @@ public class CentralController {
 
     @PostMapping("new_question")
     public @ResponseBody String setNewQuestion(@RequestBody Question question) {
-        unansweredQuestions.add(question);
-        return "На ваш вопрос будет найден ответ в ближайшее время!";
+        Optional<Event> event = currentEvents.stream().filter(n -> n.participantsChatId == question.participants_chat_id)
+                .findFirst();
+        if (event.isPresent()) {
+            question.setOrgs_chat_id(event.get().orgsChatId);
+            unansweredQuestions.add(question);
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.set("Content-Type", "application/json");
+            HttpEntity<Question> request = new HttpEntity<Question>(question, httpHeaders);
+            restTemplate.postForObject("http://localhost:8086/api/post_question", request, String.class);
+            return "На ваш вопрос будет найден ответ в ближайшее время!";
+        }
+        else {
+            return "Ваш чат не участвует ни в одном текущем мероприятии";
+        }
     }
 }
