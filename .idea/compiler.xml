@@ -2,6 +2,7 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -11,6 +12,11 @@
         <module name="master_bot_service" />
         <module name="JahbulonEventBot" />
         <module name="server_service" />
+        <module name="ParticipantsBotService" />
+        <module name="MasterBotService" />
+        <module name="JahbulonEventBot" />
+        <module name="OrganizersBotService" />
+        <module name="ServerService" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -22,6 +28,9 @@
       <module name="participants_bot_service" target="11" />
       <module name="ParticipantsBotService" target="1.8" />
       <module name="server_service" target="11" />
+      <module name="MasterBotService" target="11" />
+      <module name="OrganizersBotService" target="11" />
+      <module name="ParticipantsBotService" target="11" />
       <module name="ServerService" target="1.8" />
     </bytecodeTargetLevel>
   </component>
