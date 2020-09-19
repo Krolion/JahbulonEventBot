@@ -5,8 +5,6 @@ import com.master_bot_service.telegram.parser.UserMessageParser;
 import com.master_bot_service.data.Event;
 import com.master_bot_service.utils.Poster;
 import lombok.SneakyThrows;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -95,14 +93,18 @@ public class MasterBot extends TelegramLongPollingBot {
         }
     }
 
+    MasterBotInfo masterBotInfo = new MasterBotInfo();
+    String botUsername = masterBotInfo.getBotUsername();
+    String botToken = masterBotInfo.getBotToken(); //TODO
 
     @Override
     public String getBotUsername() {
-        return "test25675Bot";
-    } //TODO Спрятать это в xml-файл
+        return botUsername;
+    }
 
     @Override
     public String getBotToken() {
-        return "1201843114:AAGoejQVOezT3W5S-5AP9A7usC5xHIfMln4";
-    } //TODO Спрятать это в xml-файл
+        return botToken;
+    }
+
 }

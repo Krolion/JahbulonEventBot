@@ -31,7 +31,7 @@ public class QASlavePBot extends TelegramLongPollingBot {
         lastUpdate = update;
         boolean flag = false;
         try {
-            if (update.getMessage().getNewChatMembers().stream().anyMatch(n -> n.getId() == this.getBotId())) {
+            if (update.getMessage().getNewChatMembers().stream().anyMatch(n -> n.getUserName().equals(this.getBotUsername()))) {
                 flag = true;
             }
             if (!flag) { flag = update.getMessage().getGroupchatCreated(); }
@@ -77,22 +77,23 @@ public class QASlavePBot extends TelegramLongPollingBot {
         }
     }
 
+
     @SneakyThrows
     public void sendMessage(SendMessage sendMessage) {
         execute(sendMessage);
     }
 
-    @Override
-    public String getBotUsername() {
-        return "test25674Bot";
-    } //TODO Спрятать это в xml-файл
-
-    public int getBotId() {
-        return 1386895726;
-    } //TODO Спрятать это в xml-файл
+    QASlavePBotInfo qaSlavePBotInfo = new QASlavePBotInfo();
+    String botUsername = qaSlavePBotInfo.getBotUsername();
+    String botToken = qaSlavePBotInfo.getBotToken();//TODO
 
     @Override
     public String getBotToken() {
-        return "1386895726:AAHfFueXGvqAwouqs2XbN5I6mlUHKV8ZzG0";
-    } //TODO Спрятать это в xml-файл
+        return botUsername;
+    }
+
+    @Override
+    public String getBotUsername() {
+        return botToken;
+    }
 }

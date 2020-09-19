@@ -6,10 +6,7 @@ import com.organizers_bot_service.data.QuestionWithAnswer;
 import com.organizers_bot_service.telegram.parser.UserMessageParser;
 import com.organizers_bot_service.utils.Poster;
 import lombok.SneakyThrows;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -37,7 +34,7 @@ public class QASlaveOBot extends TelegramLongPollingBot {
         lastUpdate = update;
         boolean flag = false;
         try {
-            if (update.getMessage().getNewChatMembers().stream().anyMatch(n -> n.getId() == this.getBotId())) {
+            if (update.getMessage().getNewChatMembers().stream().anyMatch(n -> n.getUserName().equals(this.getBotUsername()))) {
                 flag = true;
             }
             if (!flag) { flag = update.getMessage().getGroupchatCreated(); }
@@ -86,22 +83,27 @@ public class QASlaveOBot extends TelegramLongPollingBot {
         }
     }
 
+
     @SneakyThrows
     public void sendMessage(SendMessage sendMessage) {
         execute(sendMessage);
     }
 
+
+
+
+    QASlaveOBotInfo qaSlaveOBotInfo = new QASlaveOBotInfo();
+
+    String botUsername =  qaSlaveOBotInfo.getBotUsername();
+    String botToken = qaSlaveOBotInfo.getBotToken();//TODO
+
     @Override
     public String getBotUsername() {
-        return "test25673Bot";
-    }
-
-    public int getBotId() {
-        return 1389370639;
+        return botUsername;
     }
 
     @Override
     public String getBotToken() {
-        return "1389370639:AAFpHBYG3eBgyrtFFQNh5wyhi-DIjBK5HFY";
+        return botToken;
     }
 }
