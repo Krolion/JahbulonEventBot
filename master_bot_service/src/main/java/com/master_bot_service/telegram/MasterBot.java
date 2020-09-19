@@ -3,6 +3,7 @@ package com.master_bot_service.telegram;
 import com.master_bot_service.data.Chats;
 import com.master_bot_service.telegram.parser.UserMessageParser;
 import com.master_bot_service.data.Event;
+import com.master_bot_service.utils.Poster;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -32,8 +33,6 @@ public class MasterBot extends TelegramLongPollingBot {
         lastUpdate = update;
         boolean flag = false;
         RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("Content-Type", "application/json");
         try {
             flag = chatListCommandParser.parseMessage(update.getMessage().getText()).isCommand;
         } catch (Exception ignored) {}
@@ -79,9 +78,13 @@ public class MasterBot extends TelegramLongPollingBot {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            HttpEntity<Event> request = new HttpEntity<Event>(Event.builder().orgsChatId(orgsChatId)
-                    .participantsChatId(participantsChatId).eventId(-1).build(), httpHeaders);
-            String s = restTemplate.postForObject(server + "new_event", request, String.class);
+            String s = (String) Poster.builder().aClassObject(Event.class)
+                    .aClassReturn(String.class)
+                    .object(Event.builder().orgsChatId(orgsChatId)
+                                           .participantsChatId(participantsChatId)
+                                           .eventId(-1).build())
+                    .url(server + "new_event")
+                    .build().post();
             sendMessage.setText(s);
             lastMessage = sendMessage;
             try {

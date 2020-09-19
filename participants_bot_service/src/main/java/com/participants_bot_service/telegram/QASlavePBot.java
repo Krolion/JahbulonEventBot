@@ -3,6 +3,7 @@ package com.participants_bot_service.telegram;
 import com.participants_bot_service.data.Chat;
 import com.participants_bot_service.data.Question;
 import com.participants_bot_service.telegram.parser.UserMessageParser;
+import com.participants_bot_service.utils.Poster;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -28,9 +29,6 @@ public class QASlavePBot extends TelegramLongPollingBot {
     @SneakyThrows
     public void onUpdateReceived(Update update) {
         lastUpdate = update;
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("Content-Type", "application/json");
         boolean flag = false;
         try {
             if (update.getMessage().getNewChatMembers().stream().anyMatch(n -> n.getId() == this.getBotId())) {
@@ -42,10 +40,13 @@ public class QASlavePBot extends TelegramLongPollingBot {
             // Логика если бота добавили в группу или создали группу с ним
             SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
             sendMessage.setText("Я не добавился, сорян.");
-            HttpEntity<Chat> request = new HttpEntity<Chat>(Chat.builder()
-                    .chat_id(update.getMessage().getChatId())
-                    .build(), httpHeaders);
-            String s = restTemplate.postForObject(server + "new_participants_chat", request, String.class);
+            String s = (String) Poster.builder().aClassObject(Chat.class)
+                    .aClassReturn(String.class)
+                    .object(Chat.builder()
+                            .chat_id(update.getMessage().getChatId())
+                            .build())
+                    .url(server + "new_participants_chat")
+                    .build().post();
             sendMessage.setText(s);
             lastMessage = sendMessage;
             try {
@@ -62,12 +63,14 @@ public class QASlavePBot extends TelegramLongPollingBot {
             // Логика если есть команда /question в начале
             SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
             sendMessage.setText("Вопрос не был загружен");
-            HttpEntity<Question> request = new HttpEntity<Question>(
-                    Question.builder().participants_chat_id(update.getMessage().getChatId())
+            String s = (String) Poster.builder().aClassObject(Question.class)
+                    .aClassReturn(String.class)
+                    .object(Question.builder().participants_chat_id(update.getMessage().getChatId())
                             .orgs_chat_id(0)
                             .message_id(update.getMessage().getMessageId())
-                            .text(questionCommandParser.text).build(), httpHeaders);
-            String s = restTemplate.postForObject(server + "new_question", request, String.class);
+                            .text(questionCommandParser.text).build())
+                    .url(server + "new_question")
+                    .build().post();
             sendMessage.setText(s);
             lastMessage = sendMessage;
             execute(sendMessage);

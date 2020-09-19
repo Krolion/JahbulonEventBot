@@ -8,6 +8,7 @@ import org.springframework.web.client.RestTemplate;
 import servicepackage.data.Chat;
 import servicepackage.data.Chats;
 import servicepackage.data.Question;
+import servicepackage.utils.Poster;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,15 @@ public class CentralController {
         return "Hi, i'm a CentralController";
     }
 
+    @PostMapping("check_participants_chat_id")
+    public @ResponseBody boolean check_participants_chat_id(@RequestBody int participants_chat_id) {
+        return myPChats.stream().anyMatch(n -> n.chat_id == participants_chat_id);
+    }
+
+    @PostMapping("check_orgs_chat_id")
+    public @ResponseBody boolean check_orgs_chat_id(@RequestBody int participants_chat_id) {
+        return myPChats.stream().anyMatch(n -> n.chat_id == participants_chat_id);
+    }
     @PostMapping("new_participants_chat")
     public @ResponseBody String newParticipantsChat(@RequestBody Chat chat) {
         myPChats.add(chat);
@@ -82,11 +92,11 @@ public class CentralController {
         if (event.isPresent()) {
             question.setOrgs_chat_id(event.get().orgsChatId);
             unansweredQuestions.add(question);
-            RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.set("Content-Type", "application/json");
-            HttpEntity<Question> request = new HttpEntity<Question>(question, httpHeaders);
-            restTemplate.postForObject("http://localhost:8086/api/post_question", request, String.class);
+            String s = (String) Poster.builder().aClassObject(Question.class)
+                                       .aClassReturn(String.class)
+                                       .object(question)
+                                       .url("http://localhost:8086/api/post_question")
+                                       .build().post();
             return "На ваш вопрос будет найден ответ в ближайшее время!";
         }
         else {

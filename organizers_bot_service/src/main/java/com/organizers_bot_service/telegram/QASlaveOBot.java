@@ -4,6 +4,7 @@ import com.organizers_bot_service.data.Chat;
 import com.organizers_bot_service.data.Question;
 import com.organizers_bot_service.data.QuestionWithAnswer;
 import com.organizers_bot_service.telegram.parser.UserMessageParser;
+import com.organizers_bot_service.utils.Poster;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -35,9 +36,6 @@ public class QASlaveOBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         lastUpdate = update;
         boolean flag = false;
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("Content-Type", "application/json");
         try {
             if (update.getMessage().getNewChatMembers().stream().anyMatch(n -> n.getId() == this.getBotId())) {
                 flag = true;
@@ -48,10 +46,13 @@ public class QASlaveOBot extends TelegramLongPollingBot {
             // Логика если бота добавили в группу или создали группу с ним
             SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
             sendMessage.setText("Я не добавился, сорян.");
-            HttpEntity<Chat> request = new HttpEntity<Chat>(Chat.builder()
-                    .chat_id(update.getMessage().getChatId())
-                    .build(), httpHeaders);
-            String s = restTemplate.postForObject(server + "new_orgs_chat", request, String.class);
+            String s = (String) Poster.builder().aClassObject(Chat.class)
+                    .aClassReturn(String.class)
+                    .object(Chat.builder()
+                            .chat_id(update.getMessage().getChatId())
+                            .build())
+                    .url(server + "new_orgs_chat")
+                    .build().post();
             sendMessage.setText(s);
             lastMessage = sendMessage;
             try {
@@ -72,8 +73,11 @@ public class QASlaveOBot extends TelegramLongPollingBot {
                     QuestionWithAnswer questionWithAnswer = QuestionWithAnswer.builder()
                             .question(myQuestions.get(update.getMessage().getReplyToMessage().getText()))
                             .answer(answerCommandParser.text).build();
-                    HttpEntity<QuestionWithAnswer> request = new HttpEntity<QuestionWithAnswer>(questionWithAnswer, httpHeaders);
-                    String s = restTemplate.postForObject("http://localhost:8085/api/put_question", request, String.class);
+                    String s = (String) Poster.builder().aClassObject(QuestionWithAnswer.class)
+                            .aClassReturn(String.class)
+                            .object(questionWithAnswer)
+                            .url("http://localhost:8085/api/put_question")
+                            .build().post();
                     sendMessage.setText("Спасибо за ответ, " + update.getMessage().getFrom().getUserName() + ".");
                 }
             }
