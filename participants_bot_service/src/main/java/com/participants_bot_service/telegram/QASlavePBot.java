@@ -4,6 +4,7 @@ import com.participants_bot_service.data.Chat;
 import com.participants_bot_service.data.Question;
 import com.participants_bot_service.telegram.parser.UserMessageParser;
 import lombok.SneakyThrows;
+import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import java.util.Optional;
 
 import javax.inject.Singleton;
 
@@ -31,14 +33,20 @@ public class QASlavePBot extends TelegramLongPollingBot {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set("Content-Type", "application/json");
-        boolean flag = false;
-        try {
-            if (update.getMessage().getNewChatMembers().stream().anyMatch(n -> n.getId() == this.getBotId())) {
-                flag = true;
-            }
-            if (!flag) { flag = update.getMessage().getGroupchatCreated(); }
-        } catch (Exception ignored) {} //TODO Написать это через Optional
-        if (flag) {
+        boolean flag;
+        Optional<Boolean> flagO = Optional.of(false);
+        if (update.getMessage().getNewChatMembers().stream().anyMatch(n -> n.getId() == this.getBotId())) {
+            flagO = Optional.of(true);
+        }
+        if (flagO.orElse(false)) {
+
+            flag = Optional.ofNullable(update.getMessage().getGroupchatCreated()).orElse(false);
+        }
+        else {
+            flag = false;
+        }
+
+        if(flag){
             // Логика если бота добавили в группу или создали группу с ним
             SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
             sendMessage.setText("Я не добавился, сорян.");
@@ -55,11 +63,34 @@ public class QASlavePBot extends TelegramLongPollingBot {
             }
             return;
         }
-        try {
-            flag = questionCommandParser.parseMessage(update.getMessage().getText()).isCommand;
-        } catch (Exception ignored) {} //TODO Написать это через Optional
-        if (flag) {
-            // Логика если есть команда /question в начале
+
+
+//        try {
+//            if (update.getMessage().getNewChatMembers().stream().anyMatch(n -> n.getId() == this.getBotId())) {
+//                flag = true;
+//            }
+//            if (!flag) { flag = update.getMessage().getGroupchatCreated(); }
+//        } catch (Exception ignored) {} //TODO Написать это через Optional
+
+//        if (flag) {
+//            // Логика если бота добавили в группу или создали группу с ним
+//            SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
+//            sendMessage.setText("Я не добавился, сорян.");
+//            HttpEntity<Chat> request = new HttpEntity<Chat>(Chat.builder()
+//                    .chat_id(update.getMessage().getChatId())
+//                    .build(), httpHeaders);
+//            String s = restTemplate.postForObject(server + "new_participants_chat", request, String.class);
+//            sendMessage.setText(s);
+//            lastMessage = sendMessage;
+//            try {
+//                execute(sendMessage);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            return;
+//        }
+        flag = questionCommandParser.parseMessage(Optional.of(update.getMessage().getText()).orElse("")).isCommand;
+        if(flag){
             SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
             sendMessage.setText("Вопрос не был загружен");
             HttpEntity<Question> request = new HttpEntity<Question>(
@@ -72,6 +103,23 @@ public class QASlavePBot extends TelegramLongPollingBot {
             lastMessage = sendMessage;
             execute(sendMessage);
         }
+//        try {
+//            flag = questionCommandParser.parseMessage(update.getMessage().getText()).isCommand;
+//        } catch (Exception ignored) {} //TODO Написать это через Optional
+//        if (flag) {
+//            // Логика если есть команда /question в начале
+//            SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
+//            sendMessage.setText("Вопрос не был загружен");
+//            HttpEntity<Question> request = new HttpEntity<Question>(
+//                    Question.builder().participants_chat_id(update.getMessage().getChatId())
+//                            .orgs_chat_id(0)
+//                            .message_id(update.getMessage().getMessageId())
+//                            .text(questionCommandParser.text).build(), httpHeaders);
+//            String s = restTemplate.postForObject(server + "new_question", request, String.class);
+//            sendMessage.setText(s);
+//            lastMessage = sendMessage;
+//            execute(sendMessage);
+//        }
     }
 
     @SneakyThrows
