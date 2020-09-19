@@ -20,6 +20,7 @@ import java.util.HashMap;
 public class MasterBot extends TelegramLongPollingBot {
 
 
+    private final MasterBotCredentials credentials = new MasterBotCredentials();
     private final String server = "http://localhost:8084/api/"; //TODO Удалить это и написать нормально
     public SendMessage lastMessage = null;
     public int a = 0;
@@ -44,8 +45,8 @@ public class MasterBot extends TelegramLongPollingBot {
         } catch (Exception ignored) {}
         if (flag) {
             // Логика если есть команда /question в начале
-            Chats pChats = restTemplate.getForObject(server + "ochats", Chats.class);
-            Chats oChats = restTemplate.getForObject(server + "pchats", Chats.class);
+            Chats pChats = restTemplate.getForObject(server + "pchats", Chats.class);
+            Chats oChats = restTemplate.getForObject(server + "ochats", Chats.class);
             assert oChats != null;
             assert pChats != null;
             sendMessage.setText("Participants chats \n" + pChats.chats.toString()
@@ -106,11 +107,11 @@ public class MasterBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "test25675Bot";
-    } //TODO Спрятать это в xml-файл
+        return credentials.getBotUsername();
+    }
 
     @Override
     public String getBotToken() {
-        return "1201843114:AAGoejQVOezT3W5S-5AP9A7usC5xHIfMln4";
-    } //TODO Спрятать это в xml-файл
+        return credentials.getBotToken();
+    }
 }

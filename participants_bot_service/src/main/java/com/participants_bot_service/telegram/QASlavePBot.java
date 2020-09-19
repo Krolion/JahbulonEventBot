@@ -15,11 +15,13 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.inject.Singleton;
+import java.util.Optional;
 
 @Component
 @Singleton
 public class QASlavePBot extends TelegramLongPollingBot {
 
+    private final QASlavePBotCredentials credentials = new QASlavePBotCredentials();
     private final String server = "http://localhost:8084/api/"; //TODO Удалить это и написать нормально
     public SendMessage lastMessage = null;
     public Object lastUpdate;
@@ -31,7 +33,7 @@ public class QASlavePBot extends TelegramLongPollingBot {
         lastUpdate = update;
         boolean flag = false;
         try {
-            if (update.getMessage().getNewChatMembers().stream().anyMatch(n -> n.getId() == this.getBotId())) {
+            if (update.getMessage().getNewChatMembers().stream().anyMatch(n -> n.getUserName().equals(this.getBotUsername()))) {
                 flag = true;
             }
             if (!flag) { flag = update.getMessage().getGroupchatCreated(); }
@@ -84,15 +86,11 @@ public class QASlavePBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "test25674Bot";
-    } //TODO Спрятать это в xml-файл
-
-    public int getBotId() {
-        return 1386895726;
-    } //TODO Спрятать это в xml-файл
+        return credentials.getBotUsername();
+    }
 
     @Override
     public String getBotToken() {
-        return "1386895726:AAHfFueXGvqAwouqs2XbN5I6mlUHKV8ZzG0";
-    } //TODO Спрятать это в xml-файл
+        return credentials.getBotToken();
+    }
 }

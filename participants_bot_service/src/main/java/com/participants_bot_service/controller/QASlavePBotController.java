@@ -37,7 +37,7 @@ public class QASlavePBotController {
         return objectMapper.writeValueAsString(qaSlavePBot.lastMessage);
     }
 
-    @PostMapping("put_question")
+    @PostMapping("write_answer_to_participants_chat")
     public @ResponseBody
     String putQuestion(@RequestBody QuestionWithAnswer questionWithAnswer) {
         SendMessage sendMessage = new SendMessage();

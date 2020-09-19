@@ -22,6 +22,7 @@ import java.util.HashMap;
 @Singleton
 public class QASlaveOBot extends TelegramLongPollingBot {
 
+    private final QASlaveOBotCredentials credentials = new QASlaveOBotCredentials();
     private final String server = "http://localhost:8084/api/"; //TODO Удалить это и написать нормально
     public int a = 0;
     public SendMessage lastMessage;
@@ -37,7 +38,7 @@ public class QASlaveOBot extends TelegramLongPollingBot {
         lastUpdate = update;
         boolean flag = false;
         try {
-            if (update.getMessage().getNewChatMembers().stream().anyMatch(n -> n.getId() == this.getBotId())) {
+            if (update.getMessage().getNewChatMembers().stream().anyMatch(n -> n.getUserName().equals(this.getBotUsername()))) {
                 flag = true;
             }
             if (!flag) { flag = update.getMessage().getGroupchatCreated(); }
@@ -76,9 +77,9 @@ public class QASlaveOBot extends TelegramLongPollingBot {
                     String s = (String) Poster.builder().aClassObject(QuestionWithAnswer.class)
                             .aClassReturn(String.class)
                             .object(questionWithAnswer)
-                            .url("http://localhost:8085/api/put_question")
+                            .url("http://localhost:8084/api/save_question_with_answer")
                             .build().post();
-                    sendMessage.setText("Спасибо за ответ, " + update.getMessage().getFrom().getUserName() + ".");
+                    sendMessage.setText(s + update.getMessage().getFrom().getUserName() + ".");
                 }
             }
             lastMessage = sendMessage;
@@ -93,15 +94,12 @@ public class QASlaveOBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "test25673Bot";
-    }
-
-    public int getBotId() {
-        return 1389370639;
+        return credentials.getBotUsername();
     }
 
     @Override
     public String getBotToken() {
-        return "1389370639:AAFpHBYG3eBgyrtFFQNh5wyhi-DIjBK5HFY";
+        return credentials.getBotToken();
     }
+
 }
