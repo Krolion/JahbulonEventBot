@@ -8,6 +8,7 @@ import com.participants_bot_service.utils.OptionalHandler;
 import com.participants_bot_service.utils.Poster;
 import com.sun.el.stream.Optional;
 import lombok.SneakyThrows;
+import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import java.util.Optional;
 
 import javax.inject.Singleton;
 
