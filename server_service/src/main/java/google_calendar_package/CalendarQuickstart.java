@@ -15,6 +15,8 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.*;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class CalendarQuickstart {
+
     private static final String APPLICATION_NAME = "Google Calendar API Java Quickstart";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
@@ -36,6 +39,32 @@ public class CalendarQuickstart {
      */
     private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR);
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+    private static final String CALENDAR_ID = "jahbuloneventbot@gmail.com";
+
+    private NetHttpTransport HTTP_TRANSPORT;
+    private Credential credential;
+    private Calendar calendar;
+
+    @SneakyThrows
+    public CalendarQuickstart() {
+        HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+
+        credential = getCredentials(HTTP_TRANSPORT);
+
+        calendar = new Calendar
+                .Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+
+
+    }
+
+    @SneakyThrows
+    public void GenerateEvent() {
+        Event event = CreateEvent();
+        event = calendar.events().insert(CALENDAR_ID, event).execute();
+        System.out.printf("Event created: %s\n", event.getHtmlLink());
+    }
 
     /**
      * Creates an authorized Credential object.
@@ -60,21 +89,17 @@ public class CalendarQuickstart {
         LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
-
-    public static void main(String... args) throws IOException, GeneralSecurityException {
-        // Build a new authorized API client service.
-        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        Calendar service = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-                .setApplicationName(APPLICATION_NAME)
-                .build();
-
-        String calendarId = "jahbuloneventbot@gmail.com";
-        Event event = CreateEvent();
-        event = service.events().insert(calendarId, event).execute();
-        System.out.printf("Event created: %s\n", event.getHtmlLink());
+/*
+    @SneakyThrows
+    public static void main(String... args) {
+        var calendarQuickstart = new CalendarQuickstart();
+        calendarQuickstart.GenerateEvent();
+        calendarQuickstart.GenerateEvent();
+        calendarQuickstart.GenerateEvent();
+        System.out.println("Finished");
     }
-
-    public static Event CreateEvent() {
+*/
+    public Event CreateEvent() {
         Event event = new Event()
                 .setSummary("HB")
                 .setLocation("HB")
