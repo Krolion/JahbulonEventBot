@@ -7,11 +7,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="organizers_bot_service" />
-        <module name="master_bot_service" />
         <module name="JahbulonEventBot" />
         <module name="participants_bot_service" />
+        <module name="master_bot_service" />
         <module name="server_service" />
+        <module name="organizers_bot_service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
