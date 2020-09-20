@@ -56,7 +56,7 @@ public class CentralController {
         boolean haveOChat = myOChats.stream().anyMatch(n -> n.chat_id == event.orgsChatId);
         if (haveOChat & havePChat) {
             currentEvents.add(event);
-            return "Добавлено новое мероприятие, id - " + (currentEvents.size() - 1);
+            return "Добавлено новое мероприятие.";
         }
         else {
             String message = "";

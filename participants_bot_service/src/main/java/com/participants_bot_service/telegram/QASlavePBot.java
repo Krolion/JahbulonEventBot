@@ -3,7 +3,9 @@ package com.participants_bot_service.telegram;
 import com.participants_bot_service.data.Chat;
 import com.participants_bot_service.data.Question;
 import com.participants_bot_service.telegram.parser.UserMessageParser;
+import com.participants_bot_service.utils.OptionalHandler;
 import com.participants_bot_service.utils.Poster;
+import com.sun.el.stream.Optional;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -15,7 +17,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.inject.Singleton;
-import java.util.Optional;
 
 @Component
 @Singleton
@@ -31,14 +32,7 @@ public class QASlavePBot extends TelegramLongPollingBot {
     @SneakyThrows
     public void onUpdateReceived(Update update) {
         lastUpdate = update;
-        boolean flag = false;
-        try {
-            if (update.getMessage().getNewChatMembers().stream().anyMatch(n -> n.getUserName().equals(this.getBotUsername()))) {
-                flag = true;
-            }
-            if (!flag) { flag = update.getMessage().getGroupchatCreated(); }
-        } catch (Exception ignored) {}
-        if (flag) {
+        if (OptionalHandler.isNewMember(update, this.getBotUsername())) {
             // Логика если бота добавили в группу или создали группу с ним
             SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
             sendMessage.setText("Я не добавился, сорян.");
@@ -58,10 +52,7 @@ public class QASlavePBot extends TelegramLongPollingBot {
             }
             return;
         }
-        try {
-            flag = questionCommandParser.parseMessage(update.getMessage().getText()).isCommand;
-        } catch (Exception ignored) {}
-        if (flag) {
+        if (OptionalHandler.hasCommand(update, questionCommandParser)) {
             // Логика если есть команда /question в начале
             SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
             sendMessage.setText("Вопрос не был загружен");

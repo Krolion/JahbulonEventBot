@@ -4,6 +4,7 @@ import com.organizers_bot_service.data.Chat;
 import com.organizers_bot_service.data.Question;
 import com.organizers_bot_service.data.QuestionWithAnswer;
 import com.organizers_bot_service.telegram.parser.UserMessageParser;
+import com.organizers_bot_service.utils.OptionalHandler;
 import com.organizers_bot_service.utils.Poster;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpEntity;
@@ -36,14 +37,7 @@ public class QASlaveOBot extends TelegramLongPollingBot {
     @SneakyThrows
     public void onUpdateReceived(Update update) {
         lastUpdate = update;
-        boolean flag = false;
-        try {
-            if (update.getMessage().getNewChatMembers().stream().anyMatch(n -> n.getUserName().equals(this.getBotUsername()))) {
-                flag = true;
-            }
-            if (!flag) { flag = update.getMessage().getGroupchatCreated(); }
-        } catch (Exception ignored) {}
-        if (flag) {
+        if (OptionalHandler.isNewMember(update, this.getBotUsername())) {
             // Логика если бота добавили в группу или создали группу с ним
             SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
             sendMessage.setText("Я не добавился, сорян.");
@@ -63,11 +57,8 @@ public class QASlaveOBot extends TelegramLongPollingBot {
             }
             return;
         }
-        try {
-            flag = answerFinalCommandParser.parseMessage(update.getMessage().getText()).isCommand;
-        } catch (Exception ignored) {}
-        if (flag) {
-            // Логика если есть команда /answer в начале
+        if (OptionalHandler.hasCommand(update, answerFinalCommandParser)) {
+            // Логика если есть команда /answer_final в начале
             SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
             if (update.getMessage().isReply()) {
                 if (myQuestions.containsKey(update.getMessage().getReplyToMessage().getText())) {
@@ -89,11 +80,8 @@ public class QASlaveOBot extends TelegramLongPollingBot {
             execute(sendMessage);
             return;
         }
-        try {
-            flag = answerCommandParser.parseMessage(update.getMessage().getText()).isCommand;
-        } catch (Exception ignored) {}
-        if (flag) {
-            // Логика если есть команда /answer_final в начале
+        if (OptionalHandler.hasCommand(update, answerCommandParser)) {
+            // Логика если есть команда /answer в начале
             SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
             if (update.getMessage().isReply()) {
                 if (myQuestions.containsKey(update.getMessage().getReplyToMessage().getText())) {
