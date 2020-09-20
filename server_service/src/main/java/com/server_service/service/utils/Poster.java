@@ -1,4 +1,4 @@
-package com.server_service.servicepackage.utils;
+package com.server_service.service.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

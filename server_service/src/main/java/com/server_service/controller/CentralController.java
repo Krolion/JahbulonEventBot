@@ -1,12 +1,12 @@
-package com.server_service.servicepackage.controller;
+package com.server_service.controller;
 
-import com.server_service.servicepackage.data.*;
-import com.server_service.servicepackage.utils.Poster;
+import com.server_service.service.data.*;
+import com.server_service.service.data.*;
+import com.server_service.service.utils.Poster;
 import net.ricecode.similarity.JaroWinklerStrategy;
 import net.ricecode.similarity.SimilarityStrategy;
 import net.ricecode.similarity.StringSimilarityService;
 import net.ricecode.similarity.StringSimilarityServiceImpl;
-import com.server_service.servicepackage.data.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;

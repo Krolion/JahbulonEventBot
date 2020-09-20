@@ -1,4 +1,4 @@
-package com.server_service.servicepackage.data;
+package com.server_service.service.data;
 
 
 import lombok.AllArgsConstructor;
