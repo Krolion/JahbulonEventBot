@@ -37,7 +37,7 @@ public class QASlavePBotController {
         return objectMapper.writeValueAsString(qaSlavePBot.lastMessage);
     }
 
-    @PostMapping("put_question")
+    @PostMapping("write_answer_to_participants_chat")
     public @ResponseBody
     String putQuestion(@RequestBody QuestionWithAnswer questionWithAnswer) {
         SendMessage sendMessage = new SendMessage();
@@ -45,6 +45,6 @@ public class QASlavePBotController {
                 .setChatId(questionWithAnswer.question.participants_chat_id)
                 .setReplyToMessageId((int) questionWithAnswer.question.message_id);
         this.qaSlavePBot.sendMessage(sendMessage);
-        return "200";
+        return "Спасибо за ответ, ";
     }
 }

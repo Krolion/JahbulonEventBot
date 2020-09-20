@@ -33,11 +33,12 @@ public class QASlaveOBotController {
     }
 
     @PostMapping("post_question")
-    public void redditAMA(@RequestBody Question question) {
+    public @ResponseBody String redditAMA(@RequestBody Question question) {
         SendMessage sendMessage = new SendMessage();
         this.qaSlaveOBot.activeQuestions.add(question);
         this.qaSlaveOBot.myQuestions.put(question.text, question);
         this.qaSlaveOBot.sendMessage(sendMessage.setChatId(question.orgs_chat_id).setText(question.text));
+        return "Вопрос отправлен организаторам.";
     }
 
 
