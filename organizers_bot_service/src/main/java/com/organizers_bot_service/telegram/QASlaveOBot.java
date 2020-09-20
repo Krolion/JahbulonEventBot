@@ -30,6 +30,7 @@ public class QASlaveOBot extends TelegramLongPollingBot {
     public ArrayList<Question> activeQuestions = new ArrayList<Question>();
     public HashMap<String, Question> myQuestions = new HashMap<String, Question>();
     private final UserMessageParser answerCommandParser = new UserMessageParser("answer");
+    private final UserMessageParser answerFinalCommandParser = new UserMessageParser("answer_final");
 
 
     @Override
@@ -64,7 +65,7 @@ public class QASlaveOBot extends TelegramLongPollingBot {
             return;
         }
         try {
-            flag = answerCommandParser.parseMessage(update.getMessage().getText()).isCommand;
+            flag = answerFinalCommandParser.parseMessage(update.getMessage().getText()).isCommand;
         } catch (Exception ignored) {}
         if (flag) {
             // Логика если есть команда /answer в начале
@@ -81,6 +82,35 @@ public class QASlaveOBot extends TelegramLongPollingBot {
                             .build().post();
                     sendMessage.setText(s + update.getMessage().getFrom().getUserName() + ".");
                 }
+            }
+            else {
+                sendMessage.setText("Воспользуйтесь функцией Reply для ответа на вопрос.");
+            }
+            lastMessage = sendMessage;
+            execute(sendMessage);
+            return;
+        }
+        try {
+            flag = answerCommandParser.parseMessage(update.getMessage().getText()).isCommand;
+        } catch (Exception ignored) {}
+        if (flag) {
+            // Логика если есть команда /answer_final в начале
+            SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
+            if (update.getMessage().isReply()) {
+                if (myQuestions.containsKey(update.getMessage().getReplyToMessage().getText())) {
+                    QuestionWithAnswer questionWithAnswer = QuestionWithAnswer.builder()
+                            .question(myQuestions.get(update.getMessage().getReplyToMessage().getText()))
+                            .answer(answerCommandParser.text).build();
+                    String s = (String) Poster.builder().aClassObject(QuestionWithAnswer.class)
+                            .aClassReturn(String.class)
+                            .object(questionWithAnswer)
+                            .url("http://localhost:8085/api/write_answer_to_participants_chat")
+                            .build().post();
+                    sendMessage.setText(s + update.getMessage().getFrom().getUserName() + ".");
+                }
+            }
+            else {
+                sendMessage.setText("Воспользуйтесь функцией Reply для ответа на вопрос.");
             }
             lastMessage = sendMessage;
             execute(sendMessage);

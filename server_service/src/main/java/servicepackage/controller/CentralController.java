@@ -126,12 +126,13 @@ public class CentralController {
 
     @PostMapping("save_question_with_answer")
     public @ResponseBody String saveQuestionWithAnswer(@RequestBody QuestionWithAnswer questionWithAnswer) {
-        Optional<Event> event = currentEvents
+        Optional<Question> question = unansweredQuestions
                 .stream()
-                .filter(n -> n.orgsChatId == questionWithAnswer.question.orgs_chat_id)
+                .filter(n -> n.equals(questionWithAnswer.question))
                 .findFirst();
-        if (event.isPresent()) {
+        if (question.isPresent()) {
             answeredQuestions.add(questionWithAnswer);
+            unansweredQuestions.remove(questionWithAnswer.question);
             String s = (String) Poster.builder().aClassObject(QuestionWithAnswer.class)
                     .aClassReturn(String.class)
                     .object(questionWithAnswer)
