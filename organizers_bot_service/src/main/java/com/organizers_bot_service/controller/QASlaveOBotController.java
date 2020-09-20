@@ -38,7 +38,7 @@ public class QASlaveOBotController {
         this.qaSlaveOBot.activeQuestions.add(question);
         this.qaSlaveOBot.myQuestions.put(question.text, question);
         this.qaSlaveOBot.sendMessage(sendMessage.setChatId(question.orgs_chat_id).setText(question.text));
-        return "";
+        return "Вопрос отправлен организаторам.";
     }
 
 

@@ -37,7 +37,7 @@ public class QASlavePBot extends TelegramLongPollingBot {
                 flag = true;
             }
             if (!flag) { flag = update.getMessage().getGroupchatCreated(); }
-        } catch (Exception ignored) {} //TODO Написать это через Optional
+        } catch (Exception ignored) {}
         if (flag) {
             // Логика если бота добавили в группу или создали группу с ним
             SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
@@ -60,7 +60,7 @@ public class QASlavePBot extends TelegramLongPollingBot {
         }
         try {
             flag = questionCommandParser.parseMessage(update.getMessage().getText()).isCommand;
-        } catch (Exception ignored) {} //TODO Написать это через Optional
+        } catch (Exception ignored) {}
         if (flag) {
             // Логика если есть команда /question в начале
             SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());

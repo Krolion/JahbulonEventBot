@@ -24,7 +24,6 @@ public class QASlaveOBot extends TelegramLongPollingBot {
 
     private final QASlaveOBotCredentials credentials = new QASlaveOBotCredentials();
     private final String server = "http://localhost:8084/api/"; //TODO Удалить это и написать нормально
-    public int a = 0;
     public SendMessage lastMessage;
     public Update lastUpdate;
     public ArrayList<Question> activeQuestions = new ArrayList<Question>();

@@ -5,10 +5,7 @@ import net.ricecode.similarity.SimilarityStrategy;
 import net.ricecode.similarity.StringSimilarityService;
 import net.ricecode.similarity.StringSimilarityServiceImpl;
 import servicepackage.data.*;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import servicepackage.utils.Poster;
 
 import java.util.ArrayList;
@@ -113,14 +110,14 @@ public class CentralController {
                         .object(question)
                         .url("http://localhost:8086/api/post_question")
                         .build().post();
-                return "На ваш вопрос будет найден ответ в ближайшее время!";
+                return s;
             }
             else {
                 return questionTMP.answer;
             }
         }
         else {
-            return "Ваш чат не участвует ни в одном текущем мероприятии";
+            return "Ваш чат не участвует ни в одном текущем мероприятии.";
         }
     }
 
@@ -138,7 +135,7 @@ public class CentralController {
                     .object(questionWithAnswer)
                     .url("http://localhost:8085/api/write_answer_to_participants_chat")
                     .build().post();
-            return "Спасибо за ответ, ";
+            return s;
         }
         else {
             return "Ваш чат не участвует ни в одном текущем мероприятии, ";
