@@ -52,15 +52,22 @@ public class CalendarQuickstart {
                 .Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME)
                 .build();
-
-
     }
 
     @SneakyThrows
-    public void GenerateEvent() {
+    public Event GenerateEvent() {
         Event event = CreateEvent();
         event = calendar.events().insert(CALENDAR_ID, event).execute();
         System.out.printf("Event created: %s\n", event.getHtmlLink());
+
+        return event;
+    }
+
+    @SneakyThrows
+    public String GenerateEventLink() {
+        var event = GenerateEvent();
+
+        return event.getHtmlLink();
     }
 
     /**
