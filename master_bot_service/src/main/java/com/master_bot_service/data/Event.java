@@ -13,4 +13,7 @@ public class Event {
     public long eventId;
     public long participantsChatId;
     public long orgsChatId;
+    public String htmpLink;
+    public String message;
+//    public DateTime
 }
