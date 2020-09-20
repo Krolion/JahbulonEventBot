@@ -4,6 +4,7 @@ import com.master_bot_service.data.Chats;
 import com.master_bot_service.telegram.parser.UserMessageParser;
 import com.master_bot_service.data.Event;
 import com.master_bot_service.telegram.session.EventSession;
+import com.master_bot_service.utils.OptionalHandler;
 import com.master_bot_service.utils.Poster;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
@@ -38,13 +39,9 @@ public class MasterBot extends TelegramLongPollingBot {
             this.continueSession(update);
             return;
         }
-        boolean flag = false;
-        RestTemplate restTemplate = new RestTemplate();
-        try {
-            flag = chatListCommandParser.parseMessage(update.getMessage().getText()).isCommand;
-        } catch (Exception ignored) {}
-        if (flag) {
+        if (OptionalHandler.hasCommand(update, chatListCommandParser)) {
             // Логика если есть команда /question в начале
+            RestTemplate restTemplate = new RestTemplate();
             Chats pChats = restTemplate.getForObject(server + "pchats", Chats.class);
             Chats oChats = restTemplate.getForObject(server + "ochats", Chats.class);
             assert oChats != null;
@@ -55,10 +52,7 @@ public class MasterBot extends TelegramLongPollingBot {
             execute(sendMessage);
             return;
         }
-        try {
-            flag = createEventCommandParser.parseMessage(update.getMessage().getText()).isCommand;
-        } catch (Exception ignored) {}
-        if (flag) {
+        if (OptionalHandler.hasCommand(update, createEventCommandParser)) {
             if (createEventCommandParser.text.equals("")){
                 EventSession eventSession = new EventSession(update.getMessage().getFrom().getUserName());
                 currentSessions.put(eventSession.username, eventSession);

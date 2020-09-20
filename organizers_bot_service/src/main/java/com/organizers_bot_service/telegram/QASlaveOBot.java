@@ -3,6 +3,7 @@ package com.organizers_bot_service.telegram;
 import com.organizers_bot_service.data.Chat;
 import com.organizers_bot_service.data.Question;
 import com.organizers_bot_service.data.QuestionWithAnswer;
+import com.organizers_bot_service.telegram.handler.HandlerScenario;
 import com.organizers_bot_service.telegram.parser.UserMessageParser;
 import com.organizers_bot_service.utils.OptionalHandler;
 import com.organizers_bot_service.utils.Poster;
@@ -24,83 +25,22 @@ import java.util.HashMap;
 public class QASlaveOBot extends TelegramLongPollingBot {
 
     private final QASlaveOBotCredentials credentials = new QASlaveOBotCredentials();
-    private final String server = "http://localhost:8084/api/"; //TODO Удалить это и написать нормально
+    public final String server = "http://localhost:8084/api/"; //TODO Удалить это и написать нормально
     public SendMessage lastMessage;
     public Update lastUpdate;
     public ArrayList<Question> activeQuestions = new ArrayList<Question>();
     public HashMap<String, Question> myQuestions = new HashMap<String, Question>();
-    private final UserMessageParser answerCommandParser = new UserMessageParser("answer");
-    private final UserMessageParser answerFinalCommandParser = new UserMessageParser("answer_final");
+    public final UserMessageParser answerCommandParser = new UserMessageParser("answer");
+    public final UserMessageParser answerFinalCommandParser = new UserMessageParser("answer_final");
 
 
     @Override
     @SneakyThrows
     public void onUpdateReceived(Update update) {
         lastUpdate = update;
-        if (OptionalHandler.isNewMember(update, this.getBotUsername())) {
-            // Логика если бота добавили в группу или создали группу с ним
-            SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
-            sendMessage.setText("Я не добавился, сорян.");
-            String s = (String) Poster.builder().aClassObject(Chat.class)
-                    .aClassReturn(String.class)
-                    .object(Chat.builder()
-                            .chat_id(update.getMessage().getChatId())
-                            .build())
-                    .url(server + "new_orgs_chat")
-                    .build().post();
-            sendMessage.setText(s);
-            lastMessage = sendMessage;
-            try {
-                execute(sendMessage);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-        if (OptionalHandler.hasCommand(update, answerFinalCommandParser)) {
-            // Логика если есть команда /answer_final в начале
-            SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
-            if (update.getMessage().isReply()) {
-                if (myQuestions.containsKey(update.getMessage().getReplyToMessage().getText())) {
-                    QuestionWithAnswer questionWithAnswer = QuestionWithAnswer.builder()
-                            .question(myQuestions.get(update.getMessage().getReplyToMessage().getText()))
-                            .answer(answerCommandParser.text).build();
-                    String s = (String) Poster.builder().aClassObject(QuestionWithAnswer.class)
-                            .aClassReturn(String.class)
-                            .object(questionWithAnswer)
-                            .url("http://localhost:8084/api/save_question_with_answer")
-                            .build().post();
-                    sendMessage.setText(s + update.getMessage().getFrom().getUserName() + ".");
-                }
-            }
-            else {
-                sendMessage.setText("Воспользуйтесь функцией Reply для ответа на вопрос.");
-            }
-            lastMessage = sendMessage;
-            execute(sendMessage);
-            return;
-        }
-        if (OptionalHandler.hasCommand(update, answerCommandParser)) {
-            // Логика если есть команда /answer в начале
-            SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
-            if (update.getMessage().isReply()) {
-                if (myQuestions.containsKey(update.getMessage().getReplyToMessage().getText())) {
-                    QuestionWithAnswer questionWithAnswer = QuestionWithAnswer.builder()
-                            .question(myQuestions.get(update.getMessage().getReplyToMessage().getText()))
-                            .answer(answerCommandParser.text).build();
-                    String s = (String) Poster.builder().aClassObject(QuestionWithAnswer.class)
-                            .aClassReturn(String.class)
-                            .object(questionWithAnswer)
-                            .url("http://localhost:8085/api/write_answer_to_participants_chat")
-                            .build().post();
-                    sendMessage.setText(s + update.getMessage().getFrom().getUserName() + ".");
-                }
-            }
-            else {
-                sendMessage.setText("Воспользуйтесь функцией Reply для ответа на вопрос.");
-            }
-            lastMessage = sendMessage;
-            execute(sendMessage);
+        HandlerScenario scenario = HandlerScenario.findScenario(update, this);
+        if (scenario != HandlerScenario.PASS) {
+            scenario.getMessageHandler().handle(update, this);
         }
     }
 
