@@ -16,7 +16,7 @@ public class HasAnswerFinalCommandHandler implements MessageHandler {
             if (qaSlaveOBot.myQuestions.containsKey(update.getMessage().getReplyToMessage().getText())) {
                 QuestionWithAnswer questionWithAnswer = QuestionWithAnswer.builder()
                         .question(qaSlaveOBot.myQuestions.get(update.getMessage().getReplyToMessage().getText()))
-                        .answer(qaSlaveOBot.answerCommandParser.text).build();
+                        .answer(qaSlaveOBot.answerFinalCommandParser.text).build();
                 String s = (String) Poster.builder().aClassObject(QuestionWithAnswer.class)
                         .aClassReturn(String.class)
                         .object(questionWithAnswer)

@@ -4,5 +4,5 @@ import com.organizers_bot_service.telegram.QASlaveOBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 public interface HandlerCondition {
-    public boolean conditionMet(Update update, QASlaveOBot qaSlaveOBot);
+    boolean conditionMet(Update update, QASlaveOBot qaSlaveOBot);
 }
