@@ -34,13 +34,12 @@ public class MasterBot extends TelegramLongPollingBot {
     @SneakyThrows
     public void onUpdateReceived(Update update) {
         lastUpdate = update;
-        SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
-        if (currentSessions.containsKey(update.getMessage().getFrom().getUserName())) {
+        if (OptionalHandler.inCurrentSession(update, this)) {
             this.continueSession(update);
             return;
         }
         if (OptionalHandler.hasCommand(update, chatListCommandParser)) {
-            // Логика если есть команда /question в начале
+            SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
             RestTemplate restTemplate = new RestTemplate();
             Chats pChats = restTemplate.getForObject(server + "pchats", Chats.class);
             Chats oChats = restTemplate.getForObject(server + "ochats", Chats.class);
@@ -53,6 +52,7 @@ public class MasterBot extends TelegramLongPollingBot {
             return;
         }
         if (OptionalHandler.hasCommand(update, createEventCommandParser)) {
+            SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
             if (createEventCommandParser.text.equals("")){
                 EventSession eventSession = new EventSession(update.getMessage().getFrom().getUserName());
                 currentSessions.put(eventSession.username, eventSession);

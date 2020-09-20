@@ -1,5 +1,6 @@
 package com.master_bot_service.utils;
 
+import com.master_bot_service.telegram.MasterBot;
 import com.master_bot_service.telegram.parser.UserMessageParser;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -23,5 +24,9 @@ public class OptionalHandler {
             return flag;
         } catch (Exception ignored) {}
         return false;
+    }
+
+    public static boolean inCurrentSession(Update update, MasterBot qaMasterBot) {
+        return qaMasterBot.currentSessions.containsKey(update.getMessage().getFrom().getUserName());
     }
 }
