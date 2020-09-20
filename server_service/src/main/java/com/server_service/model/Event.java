@@ -18,13 +18,19 @@ public class Event {
     private Long id;
 
     //@NotNull
+    /*
     @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
+    @MapsId*/
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "organizersChat_id")
     private OrganizersChat organizersChat;
     
     //@NotNull
+    /*
     @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
+    @MapsId*/
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "participantsChat_id")
     private ParticipantsChat participantsChat;
 
     @OneToMany(
@@ -39,4 +45,6 @@ public class Event {
             orphanRemoval = true)
     private Set<UnansweredQuestion> unansweredQuestion;
 
+    private String welcomeMessage;
+    private String htmlGoogleCalendarLink;
 }

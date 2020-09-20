@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ParticipantsChatRepository extends JpaRepository<ParticipantsChat, Long> {
-
+    ParticipantsChat findByParticipationChatId(Long id);
 }

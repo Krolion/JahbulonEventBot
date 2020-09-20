@@ -22,6 +22,7 @@ public class OrganizersChat {
     @Column(unique = true)
     private Long orgChatId;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    //@OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "organizersChat")
     private Event event;
 }

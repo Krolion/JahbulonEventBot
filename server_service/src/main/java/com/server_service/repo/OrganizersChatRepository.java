@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OrganizersChatRepository extends JpaRepository<OrganizersChat, Long> {
-
+    OrganizersChat findByOrgChatId(Long id);
 }
