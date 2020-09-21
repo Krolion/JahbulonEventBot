@@ -1,5 +1,6 @@
 package com.server_service.controller;
 
+import com.server_service.google_calendar_package.CalendarQuickstart;
 import com.server_service.model.AnsweredQuestion;
 import com.server_service.model.ParticipantsChat;
 import com.server_service.model.UnansweredQuestion;
@@ -61,13 +62,13 @@ public class CentralController {
     @PostMapping("new_participants_chat")
     public @ResponseBody String newParticipantsChat(@RequestBody Chat chat) {
         participantsChatRepository.save(dbConverter.toParticipantsChat(chat));
-        return "Всем привет! Я добавился.";
+        return "Всем привет! Я добавился. ID чата в системе: " + chat.getChat_id();
     }
 
     @PostMapping("new_orgs_chat")
     public @ResponseBody String newOrgsChat(@RequestBody Chat chat) {
         organizersChatRepository.save(dbConverter.toOrganizersChat(chat));
-        return "Всем привет! Я добавился.";
+        return "Всем привет! Я добавился. ID чата в системе: " + chat.getChat_id();
     }
 
     @PostMapping("new_event")
@@ -83,7 +84,7 @@ public class CentralController {
 
         if (haveOChat & havePChat) {
             eventRepository.save(dbConverter.toEvent(event));
-            return "Добавлено новое мероприятие.";
+            return "Добавлено новое мероприятие. Ссылка на мероприятие в Google Calendar: " + calendarQuickstart.GenerateEventLink();
         }
         else {
             String message = "";
@@ -280,4 +281,6 @@ public class CentralController {
 
         return "It's fun";
     }*/
+
+    private CalendarQuickstart calendarQuickstart = new CalendarQuickstart();
 }
