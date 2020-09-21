@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UnansweredQuestionRepository  extends JpaRepository<UnansweredQuestion, Long> {
     UnansweredQuestion findByQuestionText(String text);
+    UnansweredQuestion findByMessageId(Long id);
 }

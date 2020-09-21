@@ -21,6 +21,8 @@ public class UnansweredQuestion {
     @ManyToOne(fetch = FetchType.LAZY)
     private Event event;
 
+    private Long messageId;
+
     @NotNull
     private String questionText;
 }

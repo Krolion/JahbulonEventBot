@@ -46,12 +46,13 @@ public class DBConverter {
                                 participantsChatRepository
                                         .findByParticipationChatId(question
                                                 .participants_chat_id)
-                                        .getParticipationChatId(),
+                                        .getId(),
                                 organizersChatRepository
                                         .findByOrgChatId(question
                                                 .orgs_chat_id)
-                                        .getOrgChatId()
+                                        .getId()
                         ))
+                .messageId(question.message_id)
                 .questionText(question.text)
                 .build();
     }

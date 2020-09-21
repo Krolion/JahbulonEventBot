@@ -1,5 +1,7 @@
 package com.server_service.controller;
 
+import com.server_service.model.ParticipantsChat;
+import com.server_service.model.UnansweredQuestion;
 import com.server_service.repo.*;
 import com.server_service.service.converter.DBConverter;
 import com.server_service.service.data.*;
@@ -98,80 +100,161 @@ public class CentralController {
 
     @GetMapping("aq")
     public @ResponseBody List<QuestionWithAnswer> getQuestionWithAnswer() {
-        return answeredQuestions;
+
+        var questions = answeredQuestionRepository.findAll();
+        var result = new ArrayList<QuestionWithAnswer>();
+
+        for (com.server_service.model.AnsweredQuestion item : questions) {
+            var q = unansweredQuestionRepository.findByQuestionText(item.getQuestionText());
+
+            result.add(QuestionWithAnswer.builder()
+                    .question(Question.builder()
+                            .text(q.getQuestionText())
+                            .participants_chat_id(item.getEvent().getParticipantsChat().getParticipationChatId())
+                            .orgs_chat_id(item.getEvent().getOrganizersChat().getOrgChatId())
+                            .message_id(q.getMessageId())
+                            .build())
+                    .answer(item.getAnswerText())
+                    .build());
+        }
+
+        return result;
+        //return answeredQuestions;
     }
 
     @GetMapping("pchats")
     public @ResponseBody Chats getPChats() {
-        return Chats.builder().chats(myPChats).build();
+
+        var chats = participantsChatRepository.findAll();
+        var result = new ArrayList<Chat>();
+
+        for (com.server_service.model.ParticipantsChat item : chats) {
+
+            result.add(Chat.builder()
+                    .chat_id(item.getParticipationChatId())
+                    .build());
+        }
+
+        return Chats.builder().chats(result).build();
+        //return Chats.builder().chats(myPChats).build();
     }
 
     @GetMapping("ochats")
     public @ResponseBody Chats getOChats() {
-        return Chats.builder().chats(myOChats).build();
+
+        var chats = organizersChatRepository.findAll();
+        var result = new ArrayList<Chat>();
+
+        for (com.server_service.model.OrganizersChat item : chats) {
+
+            result.add(Chat.builder()
+                    .chat_id(item.getOrgChatId())
+                    .build());
+        }
+
+        return Chats.builder().chats(result).build();
+        //return Chats.builder().chats(myOChats).build();
     }
 
     @GetMapping("cevents")
-    public @ResponseBody List<Event> getCurrentEvents() { return currentEvents; }
+    public @ResponseBody List<Event> getCurrentEvents() {
+
+        var events = eventRepository.findAll();
+        var result = new ArrayList<Event>();
+
+        for (com.server_service.model.Event item : events) {
+            result.add(Event.builder()
+                    .eventId(item.getId())
+                    .participantsChatId(item.getParticipantsChat().getParticipationChatId())
+                    .orgsChatId(item.getOrganizersChat().getOrgChatId())
+                    .build());
+        }
+
+        return result;
+        //return currentEvents;
+    }
 
     @GetMapping("uq")
-    public @ResponseBody List<Question> getUnansweredQuestions() { return unansweredQuestions; }
+    public @ResponseBody List<Question> getUnansweredQuestions() {
+        var questions = unansweredQuestionRepository.findAll();
+        var result = new ArrayList<Question>();
+
+        for (UnansweredQuestion item : questions)
+        {
+            result.add(Question.builder()
+                    .message_id(item.getMessageId())
+                    .participants_chat_id(item.getEvent().getParticipantsChat().getParticipationChatId())
+                    .orgs_chat_id(item.getEvent().getOrganizersChat().getOrgChatId())
+                    .text(item.getQuestionText())
+                    .build());
+        }
+
+        return result;
+        //return unansweredQuestions;
+    }
 
     @PostMapping("new_question")
     public @ResponseBody String setNewQuestion(@RequestBody Question question) {
-        var myEvent = eventRepository.findByOrganizersChatIdAndParticipantsChatId(
-                organizersChatRepository.findByOrgChatId(question.orgs_chat_id).getId(),
-                participantsChatRepository.findByParticipationChatId(question.getOrgs_chat_id()).getId()
-        );
+        var participantChat = participantsChatRepository.findByParticipationChatId(question.getParticipants_chat_id());
 
-        Optional<Event> event = currentEvents.stream().filter(n -> n.participantsChatId == question.participants_chat_id)
-                .findFirst();
+        if (participantChat != null && participantChat.getEvent() != null) {
+            var myEvent = participantChat.getEvent();
 
-        if (event.isPresent()) {
-            SimilarityStrategy similarityStrategy = new JaroWinklerStrategy();
-            StringSimilarityService stringSimilarityService = new StringSimilarityServiceImpl(similarityStrategy);
-            double maxScore = -1;
-            QuestionWithAnswer questionTMP = null;
+            Optional<Event> event = currentEvents.stream().filter(n -> n.participantsChatId == question.participants_chat_id)
+                    .findFirst();
 
-            for (QuestionWithAnswer answeredQuestion : answeredQuestions) {
-                if (maxScore < stringSimilarityService.score(question.text, answeredQuestion.question.text)) {
-                    maxScore = stringSimilarityService.score(question.text, answeredQuestion.question.text);
-                    questionTMP = answeredQuestion;
+            if (event.isPresent()) {
+                SimilarityStrategy similarityStrategy = new JaroWinklerStrategy();
+                StringSimilarityService stringSimilarityService = new StringSimilarityServiceImpl(similarityStrategy);
+                double maxScore = -1;
+                QuestionWithAnswer questionTMP = null;
+
+                for (QuestionWithAnswer answeredQuestion : answeredQuestions) {
+                    if (maxScore < stringSimilarityService.score(question.text, answeredQuestion.question.text)) {
+                        maxScore = stringSimilarityService.score(question.text, answeredQuestion.question.text);
+                        questionTMP = answeredQuestion;
+                    }
                 }
-            }
 
-            if (maxScore < 0.5) {
-                question.setOrgs_chat_id(event.get().orgsChatId);
-                unansweredQuestionRepository.save(dbConverter.toUnansweredQuestion(question));
-                unansweredQuestions.add(question);
+                if (maxScore < 0.5) {
+                    //question.setOrgs_chat_id(event.get().orgsChatId);
+                    question.setOrgs_chat_id(myEvent.getOrganizersChat().getOrgChatId());
+                    unansweredQuestionRepository.save(dbConverter.toUnansweredQuestion(question));
+                    unansweredQuestions.add(question);
 
-                var s = (String) Poster.builder().aClassObject(Question.class)
-                        .aClassReturn(String.class)
-                        .object(question)
-                        .url("http://localhost:8086/api/post_question")
-                        .build().post();
-                return s;
+                    var s = (String) Poster.builder().aClassObject(Question.class)
+                            .aClassReturn(String.class)
+                            .object(question)
+                            .url("http://localhost:8086/api/post_question")
+                            .build().post();
+                    return s;
+                } else {
+                    return questionTMP.answer;
+                }
+            } else {
+                return "Ваш чат не участвует ни в одном текущем мероприятии.";
             }
-            else {
-                return questionTMP.answer;
-            }
-        }
-        else {
+        } else {
             return "Ваш чат не участвует ни в одном текущем мероприятии.";
         }
     }
 
     @PostMapping("save_question_with_answer")
     public @ResponseBody String saveQuestionWithAnswer(@RequestBody QuestionWithAnswer questionWithAnswer) {
+        var myquestion = unansweredQuestionRepository
+                .findByQuestionText(questionWithAnswer.getQuestion().text);
+
         Optional<Question> question = unansweredQuestions
                 .stream()
                 .filter(n -> n.equals(questionWithAnswer.question))
                 .findFirst();
+
         if (question.isPresent()) {
-            answeredQuestionRepository.save(dbConverter.toAnsweredQuestion(questionWithAnswer));
+            var answeredQuestion = dbConverter.toAnsweredQuestion(questionWithAnswer);
+            answeredQuestionRepository.save(answeredQuestion);
             answeredQuestions.add(questionWithAnswer);
 
-            unansweredQuestionRepository.delete(unansweredQuestionRepository.findByQuestionText(question.get().text));
+            unansweredQuestionRepository.delete(myquestion/*unansweredQuestionRepository.findByQuestionText(question.get().text)*/);
             unansweredQuestions.remove(questionWithAnswer.question);
 
             var s = (String) Poster.builder().aClassObject(QuestionWithAnswer.class)
