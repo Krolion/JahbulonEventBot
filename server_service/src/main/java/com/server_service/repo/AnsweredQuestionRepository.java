@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AnsweredQuestionRepository  extends JpaRepository<AnsweredQuestion, Long> {
-
+    AnsweredQuestion findByQuestionText(String text);
 }

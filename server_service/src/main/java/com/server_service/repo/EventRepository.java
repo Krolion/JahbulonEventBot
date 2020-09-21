@@ -13,5 +13,6 @@ import java.util.List;
 public interface EventRepository extends JpaRepository<Event, Long> {
 
     Event findByOrganizersChatIdAndParticipantsChatId(Long organizersChatId, Long participantsChatId);
-
+    Event findByOrganizersChatOrgChatId(long id);
+    Event findByParticipantsChatParticipationChatId(long id);
 }

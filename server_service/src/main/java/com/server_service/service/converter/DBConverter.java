@@ -41,36 +41,22 @@ public class DBConverter {
     }
 
     public UnansweredQuestion toUnansweredQuestion(Question question) {
+        var ev1 = eventRepository.findByOrganizersChatOrgChatId(question.getOrgs_chat_id());
+        var ev2 = eventRepository.findByParticipantsChatParticipationChatId(question.getParticipants_chat_id());
+
         return UnansweredQuestion.builder()
-                .event(eventRepository.findByOrganizersChatIdAndParticipantsChatId(
-                                participantsChatRepository
-                                        .findByParticipationChatId(question
-                                                .participants_chat_id)
-                                        .getId(),
-                                organizersChatRepository
-                                        .findByOrgChatId(question
-                                                .orgs_chat_id)
-                                        .getId()
-                        ))
+                .event(ev1 == null ? ev2 : ev1)
                 .messageId(question.message_id)
                 .questionText(question.text)
                 .build();
     }
 
     public AnsweredQuestion toAnsweredQuestion(QuestionWithAnswer question) {
+        var ev1 = eventRepository.findByOrganizersChatOrgChatId(question.getQuestion().getOrgs_chat_id());
+        var ev2 = eventRepository.findByParticipantsChatParticipationChatId(question.getQuestion().getParticipants_chat_id());
+
         return AnsweredQuestion.builder()
-                .event(eventRepository.findByOrganizersChatIdAndParticipantsChatId(
-                        participantsChatRepository
-                                .findByParticipationChatId(question
-                                        .getQuestion()
-                                        .participants_chat_id)
-                                .getParticipationChatId(),
-                        organizersChatRepository
-                                .findByOrgChatId(question
-                                        .getQuestion()
-                                        .orgs_chat_id)
-                                .getOrgChatId()
-                ))
+                .event(ev1 == null ? ev2 : ev1)
                 .questionText(question.getQuestion().text)
                 .answerText(question.answer)
                 .build();
